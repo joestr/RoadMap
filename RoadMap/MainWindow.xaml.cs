@@ -94,27 +94,6 @@ namespace RoadMap
         } 
         #endregion
 
-        #region CvMap resizement/dimensions
-        private void CvMap_MouseMove(object sender, MouseEventArgs e)
-        {
-            Point p = Mouse.GetPosition(cvMap);
-            lblCvMapHoverInfo.Content = "X: " + (int)(p.X / sizeFactorX) + ", Y: " + (int)(30000 - p.Y / sizeFactorY);
-        }
-
-        private void CvMap_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Point p = Mouse.GetPosition(relativeTo: cvMap);
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            cvMap.Width = (border.ActualWidth < border.ActualHeight * 2 ? border.ActualWidth : border.ActualHeight * 2) - 20;
-            cvMap.Height = (border.ActualHeight * 2 < border.ActualWidth ? border.ActualHeight : border.ActualWidth / 2) - 20;
-            if (allStreets != null)
-                DrawStreets();
-        }
-        #endregion
-
         #region Datagrid SelectionChanged handlers
         private void DgTransports_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -123,7 +102,7 @@ namespace RoadMap
             if (selectedTransport != null) //because executed at startup for some reason
             {
                 IList<Street> streets = db.GetStreetsOfTransport(selectedTransport, out double distance);
-                lblDistance.Content = "Distance: " + Math.Floor(distance);
+                lblDistance.Content = "Distanz: " + Math.Floor(distance) + " Meter";
                 ToggleStreetsHighlighting(streets);
             }
         }

@@ -24,24 +24,37 @@ namespace RoadMap
         private readonly string RoutesSelect = "SELECT DISTINCT rid1, route.ABSCHNITT_BEZEICHNUNG from routennetz INNER JOIN route on route.RID = routennetz.RID1";
         private readonly string RouteByIdSelect = "SELECT rid, route.ABSCHNITT_BEZEICHNUNG from route where RID = :rid";
 
+        /// <summary>
+        /// Creates a new instance of the database class
+        /// </summary>
         private Database()
         {
+            // Create a new connection here
             CreateConnection();
         }
 
-        public void CreateConnection()
-        {
-            connection = new OracleConnection(@"user id=d4b26;password=d4b;data source=" +
-                                                     "(description=(address=(protocol=tcp)" +
-                                                     "(host=" + IP + ")(port=1521))(connect_data=" +
-                                                     "(service_name=ora11g)))");
-            connection.Open();
-        }
-
+        /// <summary>
+        /// For singleton access
+        /// </summary>
+        /// <returns>Database</returns>
         public static Database GetInstance()
         {
             if (database == null) database = new Database();
             return database;
+        }
+
+        /// <summary>
+        /// Creates a connections
+        /// </summary>
+        public void CreateConnection()
+        {
+            // Get an oracle Connection here
+            connection = new OracleConnection(@"user id=d4b26;password=d4b;data source=" +
+                                                     "(description=(address=(protocol=tcp)" +
+                                                     "(host=" + IP + ")(port=1521))(connect_data=" +
+                                                     "(service_name=ora11g)))");
+            // Open the connection
+            connection.Open();
         }
 
         #region Get-operations
