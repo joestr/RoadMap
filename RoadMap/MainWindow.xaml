@@ -38,9 +38,9 @@
                 <DataGridTextColumn Header="To" Width="3*" Binding="{Binding To}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="150" Height="25" SelectedIndex="1">
-            <RadioButton Content="Interne Verbindung"/>
-            <RadioButton Content="Externe Verbindung" IsChecked="True"/>
+        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="150" Height="25" SelectedIndex="0">
+            <RadioButton Content="Interne Verbindung" IsChecked="True"/>
+            <RadioButton Content="Externe Verbindung"/>
         </ComboBox>
         <Button x:Name="btnReconnect" Content="Verbinden" HorizontalAlignment="Left" Margin="170,10,0,0" VerticalAlignment="Top" Width="100" Height="25" Click="BtnReconnect_Click" Grid.ColumnSpan="2"/>
         <Button x:Name="btnCommit" Content="Anwenden" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,108,10,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnCommit_Click" IsEnabled="False"/>
