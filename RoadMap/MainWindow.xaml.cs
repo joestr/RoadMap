@@ -163,7 +163,8 @@ namespace RoadMap
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                db.Rollback();
+                if (!ex.Message.Contains("select"))
+                    db.Rollback();
             }
         }
 

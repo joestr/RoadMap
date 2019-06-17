@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RoadMap"
         mc:Ignorable="d"
-        Title="Road Map" Height="500" Width="800" MinWidth="800" MinHeight="500">
+        Title="Road Map" Height="865.033" Width="1457.556" MinWidth="800" MinHeight="500">
     <Grid Margin="0,0,2,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="45"/>
@@ -21,17 +21,17 @@
         <Border x:Name="border" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Grid.ColumnSpan="2" Grid.Row="1">
             <Canvas x:Name="cvMap" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10" Background="#E8F0F5" RenderTransformOrigin="0.5,0.5"/>
         </Border>
-        <DataGrid x:Name="dgTransports" HorizontalAlignment="Stretch" Margin="10,10,10,108" VerticalAlignment="Stretch" ColumnWidth="*" SelectionChanged="DgTransports_SelectionChanged" Grid.Row="1" Grid.Column="2" IsReadOnly="True" Grid.RowSpan="2"/>
-        <DataGrid x:Name="dgRoutes" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="2" SelectionChanged="DgRoutes_SelectionChanged" IsReadOnly="True">
+        <DataGrid x:Name="dgTransports" HorizontalAlignment="Right" Margin="0,0,32,43" VerticalAlignment="Bottom" ColumnWidth="*" SelectionChanged="DgTransports_SelectionChanged" Grid.Row="2" IsReadOnly="True" Width="923" Height="276" Grid.ColumnSpan="2"/>
+        <DataGrid x:Name="dgRoutes" HorizontalAlignment="Right" Margin="0,10,19,0" VerticalAlignment="Top" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="DgRoutes_SelectionChanged" IsReadOnly="True" Height="249" Grid.Column="2" Width="463">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="RID" Width="*" Binding="{Binding RID}"/>
                 <DataGridTextColumn Header="Bezeichnung" Width="3*" Binding="{Binding AbschnittBezeichnung}"/>
             </DataGrid.Columns>
         </DataGrid>
         <Label x:Name="lblDistance" Content="" HorizontalAlignment="Stretch" Margin="10,10,9,10" VerticalAlignment="Stretch" Grid.Column="2"/>
-        <Button x:Name="btnNewTransport" Content="Neuer Transport (Sperrung der Route)" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,84,10,0" VerticalAlignment="Top" Grid.Row="2" Click="BtnNewTransport_Click"/>
-        <Button x:Name="btnFinishTransport" Content="Transport als erledigt markieren" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,157,10,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnFinishTransport_Click"/>
-        <DataGrid x:Name="dgStreets" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="2" VerticalAlignment="Stretch" SelectionChanged="DgStreets_SelectionChanged" AutoGenerateColumns="False" IsReadOnly="True">
+        <Button x:Name="btnNewTransport" Content="Neuer Transport (Sperrung der Route)" Grid.Column="2" HorizontalAlignment="Stretch" Margin="1,161,19,0" VerticalAlignment="Top" Grid.Row="2" Click="BtnNewTransport_Click"/>
+        <Button x:Name="btnFinishTransport" Content="Transport als erledigt markieren" Grid.Column="2" HorizontalAlignment="Stretch" Margin="1,234,19,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnFinishTransport_Click"/>
+        <DataGrid x:Name="dgStreets" Grid.Column="2" HorizontalAlignment="Stretch" Margin="0,311,19,0" Grid.Row="1" VerticalAlignment="Top" SelectionChanged="DgStreets_SelectionChanged" AutoGenerateColumns="False" IsReadOnly="True" Height="249" Grid.RowSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="*" Binding="{Binding ID}"/>
                 <DataGridTextColumn Header="From" Width="3*" Binding="{Binding From}"/>
@@ -43,7 +43,7 @@
             <RadioButton Content="Externe Verbindung"/>
         </ComboBox>
         <Button x:Name="btnReconnect" Content="Verbinden" HorizontalAlignment="Left" Margin="170,10,0,0" VerticalAlignment="Top" Width="100" Height="25" Click="BtnReconnect_Click" Grid.ColumnSpan="2"/>
-        <Button x:Name="btnCommit" Content="Anwenden" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,108,10,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnCommit_Click" IsEnabled="False"/>
-        <Button x:Name="btnRollback" Content="Zurücksetzen" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,133,10,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnRollback_Click" IsEnabled="False"/>
+        <Button x:Name="btnCommit" Content="Anwenden" Grid.Column="2" HorizontalAlignment="Stretch" Margin="1,185,19,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnCommit_Click" IsEnabled="False"/>
+        <Button x:Name="btnRollback" Content="Zurücksetzen" Grid.Column="2" HorizontalAlignment="Stretch" Margin="1,210,19,0" Grid.Row="2" VerticalAlignment="Top" Click="BtnRollback_Click" IsEnabled="False"/>
     </Grid>
 </Window>
