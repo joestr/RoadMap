@@ -11,6 +11,7 @@ namespace RoadMap
         private OracleConnection connection;
         private static Database database;
         private OracleTransaction transaction;
+        private readonly string CoordinatesOfStreetSelect = " SELECT teilstrecke.ID, t.X, t.Y FROM teilstrecke, TABLE(SDO_UTIL.GETVERTICES(street)) t WHERE teilstrecke.id = :id";
         private readonly string StreetsSelect = "SELECT teilstrecke.ID, von_Ort, bis_Ort, transportnr, t.X, t.Y FROM teilstrecke, TABLE(SDO_UTIL.GETVERTICES(street)) t";
         private readonly string StreetsOfRouteSelect = "SELECT rid2 id, teilstrecke.von_ort von, teilstrecke.bis_ort bis FROM routennetz LEFT JOIN teilstrecke ON routennetz.rid2 = teilstrecke.id WHERE connect_by_isleaf = 1 connect by prior rid2 = rid1 start with rid1 = :rid";
         private readonly string StreetsOfTransportSelect = "SELECT teilstrecke.ID, von_Ort, bis_Ort, transportnr, t.X, t.Y FROM teilstrecke, TABLE(SDO_UTIL.GETVERTICES(street)) t WHERE transportnr = :tnr ";
@@ -69,8 +70,8 @@ namespace RoadMap
                     string id = reader["id"].ToString();
                     string von_Ort = reader["von_Ort"].ToString();
                     string bis_Ort = reader["bis_Ort"].ToString();
-                    int transportnr = Convert.ToInt32(reader["transportnr"].ToString() == "" ? "0" : reader["transportnr"].ToString());
                     Point givenPoint = new Point(Convert.ToDouble(reader["X"]), Convert.ToDouble(reader["Y"]));
+                    int transportnr = Convert.ToInt32(reader["transportnr"].ToString() == "" ? "0" : reader["transportnr"].ToString());
                     if (!streets.ContainsKey(id))
                         streets.Add(id, new Street(id, von_Ort, bis_Ort, transportnr, givenPoint, givenPoint));
                     else
@@ -155,6 +156,102 @@ namespace RoadMap
                 }
             return transports;
         }
+
+        public Route GetShortestAvailableRouteKluVil(out bool status)
+        {
+            //select R1-R5
+            status = false;
+            IList<Route> routes = new List<Route>();
+            string[] ids = new string[] { "R1", "R2", "R3", "R4", "R5" };
+            foreach (string routeId in ids)
+            {
+                routes.Add(GetRouteById(routeId));
+            }
+            //order by length
+            double[] lengths = new double[5];
+            int i = 0;
+            foreach (Route route in routes)
+            {
+                lengths[i] = GetLengthOfRoute(routes[i++]);
+            }
+            SortedList<double, Route> routeToLengthMapping = new SortedList<double, Route>();
+            i = 0;
+            foreach (Route route1 in routes)
+            {
+                routeToLengthMapping.Add(lengths[i++], route1);
+            }
+            //Try each route and stop at the shortest free one
+            foreach (Route route2 in routeToLengthMapping.Values)
+            {
+                IList<Street> streetsToLock = GetStreetsOfRoute(route2);
+                //look up if there isn't a transportNr somewhere
+                string str = "(";
+                foreach (Street street in streetsToLock) str += "'" + street.ID + "', ";
+                str = str.Substring(0, str.Length - 2);
+                str += ")";
+                OracleCommand cmd = new OracleCommand(CountStreetHasAlreadyTransportNr + str, connection);
+                OracleDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    int count = Convert.ToInt32(reader["result"]);
+                    if (count != 0) continue;
+                }
+                else throw new Exception("Could not determine if all streets are free!");
+                //try select for update --> fails if any other client has already locked a record
+                str = "";
+                foreach (Street street in streetsToLock) str += "'" + street.ID + "', ";
+                str = str.Substring(0, str.Length - 2);
+                //transaction?.Commit();
+                transaction = connection.BeginTransaction();
+                OracleCommand cmd1 = new OracleCommand(SelectForUpdate.Replace("xxx", str), connection);
+                try
+                {
+                    cmd1.ExecuteNonQuery();
+                    status = true;
+                    Rollback();
+                    return route2;
+                }
+                catch (Exception)
+                {
+                    Rollback();
+                    status = false;
+                    return route2;
+                }
+            }
+            return null;
+        }
+
+        private double GetLengthOfRoute(Route route)
+        {
+            IList<Street> streets = new List<Street>();
+            double distance = 0;
+            streets = GetStreetsOfRoute(route);
+            foreach (Street street in streets)
+            {
+                OracleCommand cmd = new OracleCommand(CoordinatesOfStreetSelect, connection);
+                cmd.Parameters.Add(new OracleParameter("id", street.ID));
+                OracleDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                    while (reader.Read())
+                    {
+                        string id = reader["id"].ToString();
+                        Point givenPoint = new Point(Convert.ToDouble(reader["X"]), Convert.ToDouble(reader["Y"]));
+                        if (street.FromPoint == null)
+                            street.FromPoint = givenPoint;
+                        else
+                            street.ToPoint = givenPoint;
+                    }
+            }
+            foreach (Street street in streets)
+            {
+                double distanceX = street.ToPoint.X - street.FromPoint.X < 0 ? (street.ToPoint.X - street.FromPoint.X) * (-1) : (street.ToPoint.X - street.FromPoint.X);
+                double distanceY = street.ToPoint.Y - street.FromPoint.Y < 0 ? (street.ToPoint.Y - street.FromPoint.Y) * (-1) : (street.ToPoint.Y - street.FromPoint.Y);
+                distance += Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
+            }
+            return distance;
+        }
+
 
         private Route GetRouteById(string rid)
         {

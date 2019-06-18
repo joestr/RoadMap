@@ -201,7 +201,17 @@ namespace RoadMap
             {
                 MessageBox.Show(ex.Message);
             }
-        } 
+        }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Route route = db.GetShortestAvailableRouteKluVil(out bool stat);
+            if (route == null) {MessageBox.Show("Keine Route verfügbar"); return; }
+            status.Text = "Kürzeste Route: " + route.RID + ", " + route.AbschnittBezeichnung + "\n";
+            status.Text += "Status: " + (stat == true ? "frei" : "besetzt");
+            dgRoutes.SelectedItem = route;
+            this.BtnNewTransport_Click(null, null);
+        }
     }
 }
